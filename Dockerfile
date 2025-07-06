@@ -1,17 +1,20 @@
-# # Dockerfile
+FROM bitnami/spark:3.3.2
 
-# FROM bitnami/spark:3.3.2
+USER root
 
-# USER root
+# # Install Scala + sbt + basic build tools
+# RUN apt-get update && \
+#     apt-get install -y curl unzip default-jdk scala && \
+#     curl -L -o /sbt.zip https://github.com/sbt/sbt/releases/download/v1.8.2/sbt-1.8.2.zip && \
+#     unzip /sbt.zip -d /opt/ && \
+#     ln -s /opt/sbt/bin/sbt /usr/local/bin/sbt
 
-# # Install required tools and Python packages
-# RUN apt-get update && apt-get install -y python3-pip && \
-#     pip3 install pyspark pandas
-
-# # Copy your PySpark script
-# COPY script.py /app/pyspark_script.py
-
-# # Set working directory
 # WORKDIR /app
 
-# CMD ["spark-submit", "pyspark_script.py"]
+# COPY ./scala-spark-project /app
+
+# RUN sbt compile
+
+# CMD ["sbt", "run"]
+
+

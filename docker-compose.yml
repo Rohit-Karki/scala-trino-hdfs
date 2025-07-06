@@ -52,6 +52,19 @@ services:
     #   object-store:
     #     condition: service_healthy
 
+  spark-scala:
+    build:
+      context: .
+      dockerfile: Dockerfile.scala
+    container_name: spark-scala
+    depends_on:
+      - namenode
+      - postgres
+    volumes:
+      - ./scala-spark-project:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   # pyspark:
   #   build:
   #     context: .
