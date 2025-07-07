@@ -40,7 +40,8 @@ services:
     volumes:
       - ./etc/catalog:/etc/trino/catalog
       # - /tmp/warehouse/pyiceberg_catalog.db:/iceberg-catalog/iceberg.db
-      - /home/rohitkarki/Downloads/sqlite-jdbc-3.50.2.0.jar:/usr/lib/trino/plugin/iceberg/sqlite-jdbc-3.50.2.0.jar
+      - /home/rohitkarki/Downloads/mysql-connector-j-8.3.0.jar:/usr/lib/trino/plugin/iceberg/mysql-connector-j-8.3.0.jar
+      # - /home/rohitkarki/Downloads/sqlite-jdbc-3.50.2.0.jar:/usr/lib/trino/plugin/iceberg/sqlite-jdbc-3.50.2.0.jar
 
     ports:
       - '8080:8080'
@@ -52,46 +53,18 @@ services:
     #   object-store:
     #     condition: service_healthy
 
-  spark-scala:
-    build:
-      context: .
-      dockerfile: Dockerfile.scala
-    container_name: spark-scala
-    depends_on:
-      - namenode
-      - postgres
-    volumes:
-      - ./scala-spark-project:/app
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  # pyspark:
+  # spark-scala:
   #   build:
   #     context: .
-  #     dockerfile: Dockerfile
+  #     dockerfile: Dockerfile.scala
+  #   container_name: spark-scala
   #   depends_on:
   #     - namenode
-  #     - datanode
   #     - postgres
-  #   container_name: pyspark
   #   volumes:
-  #     - ./pyspark_script.py:/app/pyspark_script.py
-  #   environment:
-  #     - PYSPARK_PYTHON=python3
-  # minio:
-  #   image: minio/minio
-  #   environment:
-  #     - MINIO_ROOT_USER=minio-user
-  #     - MINIO_ROOT_PASSWORD=minio-password
-  #   ports:
-  #     - 9001:9001
-  #     - 9000:9000
-  #   command: ["server", "/data", "--console-address", ":9001"]
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "mc alias set minio http://localhost:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} && mc mb minio/warehouse && mc anonymous set public minio/warehouse"]
-  #     interval: 2s
-  #     timeout: 2s
-  #     retries: 5
+  #     - ./scala-spark-project:/app
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
 
   postgres:
     image: postgres:latest
@@ -104,6 +77,21 @@ services:
       - "5432:5432"
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=exampledb
+      - MYSQL_ROOT_PASSWORD=exampleuser
+      - MYSQL_USER=exampleuser
+      - MYSQL_PASSWORD=examplepass
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
 
 volumes:
   hadoop_namenode:
