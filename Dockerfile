@@ -1,6 +1,6 @@
-FROM bitnami/spark:3.3.2
+# FROM bitnami/spark:3.3.2
 
-USER root
+# USER root
 
 # # Install Scala + sbt + basic build tools
 # RUN apt-get update && \

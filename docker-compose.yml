@@ -1,7 +1,6 @@
-version: '3'
+version: "3"
 
 services:
-
   namenode:
     image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
     container_name: namenode
@@ -19,7 +18,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-
   datanode:
     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
     container_name: datanode
@@ -35,48 +33,20 @@ services:
     ports:
       - "9864:9864"
   controller:
-    image: 'trinodb/trino:444'
+    image: "trinodb/trino:444"
     hostname: trino
     volumes:
       - ./etc/catalog:/etc/trino/catalog
-      # - /tmp/warehouse/pyiceberg_catalog.db:/iceberg-catalog/iceberg.db
+      # For MYSQL JDBC drivers
       - /home/rohitkarki/Downloads/mysql-connector-j-8.3.0.jar:/usr/lib/trino/plugin/iceberg/mysql-connector-j-8.3.0.jar
+      # For SQLite JDBC drivers uncomment the following linest
       # - /home/rohitkarki/Downloads/sqlite-jdbc-3.50.2.0.jar:/usr/lib/trino/plugin/iceberg/sqlite-jdbc-3.50.2.0.jar
 
     ports:
-      - '8080:8080'
+      - "8080:8080"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    # depends_on:
-    #   metastore:
-    #     condition: service_healthy
-    #   object-store:
-    #     condition: service_healthy
 
-  # spark-scala:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.scala
-  #   container_name: spark-scala
-  #   depends_on:
-  #     - namenode
-  #     - postgres
-  #   volumes:
-  #     - ./scala-spark-project:/app
-  #   extra_hosts:
-  #     - "host.docker.internal:host-gateway"
-
-  postgres:
-    image: postgres:latest
-    container_name: postgres
-    environment:
-      POSTGRES_DB: exampledb
-      POSTGRES_USER: exampleuser
-      POSTGRES_PASSWORD: examplepass
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./postgres-data:/var/lib/postgresql/data
 
   mysql:
     image: mysql:8.0
@@ -91,6 +61,29 @@ services:
     volumes:
       - ./mysql-data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # postgres:
+  #   image: postgres:latest
+  #   container_name: postgres
+  #   environment:
+  #     POSTGRES_DB: exampledb
+  #     POSTGRES_USER: exampleuser
+  #     POSTGRES_PASSWORD: examplepass
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - ./postgres-data:/var/lib/postgresql/data
+
+  # spark-scala:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.scala
+  #   container_name: spark-scala
+  #   depends_on:
+  #     - namenode
+  #     - mysql      
+  #   volumes:
+  #     - ./scala-spark-project:/app
 
 
 volumes:
