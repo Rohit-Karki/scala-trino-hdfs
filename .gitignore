@@ -1,3 +1,4 @@
 /minio-data/
 mysql-data
 postgres-data
+scala-spark-project/target
