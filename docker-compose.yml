@@ -47,6 +47,22 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+  spark-flask:
+    build:
+      context: .
+      dockerfile: Dockerfile.scala
+    container_name: spark-flask
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./jobs:/jobs   # mount Python job scripts
+
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+    depends_on:
+      - namenode
+      - datanode
+
 
   mysql:
     image: mysql:8.0

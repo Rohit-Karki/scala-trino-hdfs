@@ -2,17 +2,19 @@ FROM bitnami/spark:3.3.2
 
 USER root
 
-# Install Scala + sbt + basic build tools
-RUN apt-get update && \
-    apt-get install -y curl unzip default-jdk scala && \
-    curl -L -o /sbt.zip https://github.com/sbt/sbt/releases/download/v1.8.2/sbt-1.8.2.zip && \
-    unzip /sbt.zip -d /opt/ && \
-    ln -s /opt/sbt/bin/sbt /usr/local/bin/sbt
+RUN apt-get update && apt-get install -y python3 python3-pip
+
+RUN pip3 install flask
+
+# Set up environment
+ENV SPARK_HOME=/opt/bitnami/spark
+ENV PATH=$SPARK_HOME/bin:$PATH
 
 WORKDIR /app
 
-COPY ./scala-spark-project /app
+# Copy Python Flask server
+COPY spark_submit_server.py /app/
 
-RUN sbt compile
+EXPOSE 5000
 
-CMD ["sbt", "run"]
+CMD ["python3", "/app/spark_submit_server.py"]
